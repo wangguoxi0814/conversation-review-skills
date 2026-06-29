@@ -1,0 +1,7 @@
+Front,Back,Tags
+"JDK 21 中哪些特性已正式转正（非 Preview）？","虚拟线程(JEP 444)、Record 模式(JEP 440)、switch 模式匹配(JEP 441)、有序集合(JEP 431)、分代 ZGC(JEP 439)、KEM API(JEP 452)。","Java::JDK21 概念理解"
+"虚拟线程与平台线程的核心区别是什么？","虚拟线程由 JVM 调度、创建成本低；大量虚拟线程映射到少量 OS 载体线程；I/O 阻塞时可卸载让出载体。","Java::虚拟线程 概念理解"
+"虚拟线程在什么情况下会发生 pinning？","在 synchronized 块或 native 代码中阻塞时，虚拟线程可能无法从载体线程卸载，导致载体被占满。","Java::虚拟线程 原理知识"
+"Spring AI 中 Function Calling 的新 API 叫什么？","Tool Calling；核心接口为 ToolCallback，ChatClient 使用 .tools() 替代已弃用的 .functions()。","AI/ML::SpringAI 概念理解"
+"ChatClient 与 ChatModel 在 Tool Calling 上的关键差异？","ChatClient 通过 ToolCallingAdvisor 自动执行 tool call 循环；直接调 ChatModel 只发送工具定义，不会自动执行。","AI/ML::SpringAI 原理知识"
+"AI-X 项目中 Agent 如何挂载工具？","实现 Agent 接口的 tools() 方法返回 @Tool 标注的 Bean；AbstractAgent 已在 buildChatClientRequestSpec 中调用 .tools(this.tools())。","AI/ML::SpringAI 架构设计"

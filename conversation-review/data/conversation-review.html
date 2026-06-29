@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conversation Review</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #111827;
+      --accent-soft: #f3f4f6;
+      --highlight: #2563eb;
+      --radius: 12px;
+      --font: "Inter", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px;
+    }
+
+    .filters button {
+      border: none;
+      background: transparent;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filters button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .filters button:hover:not(.active) {
+      color: var(--text);
+      background: var(--accent-soft);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stat .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    section {
+      margin-bottom: 36px;
+    }
+
+    section h2 {
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .bars {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 40px;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.875rem;
+    }
+
+    .bar-label {
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: var(--accent-soft);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .bar-count {
+      text-align: right;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--text);
+      margin-right: 4px;
+    }
+
+    .tag.blind {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .blind-item {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .blind-item:last-child { border-bottom: none; }
+
+    .blind-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .blind-item .meta {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .blind-item p {
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .empty {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    code {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.8125rem;
+      background: var(--accent-soft);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1 id="title">Conversation Review</h1>
+        <p id="subtitle">学习回顾 · 知识盲区分析</p>
+      </div>
+      <div class="filters" role="tablist">
+        <button type="button" data-range="all" class="active">全部</button>
+        <button type="button" data-range="week">本周</button>
+        <button type="button" data-range="month">本月</button>
+      </div>
+    </header>
+
+    <div class="stats" id="stats"></div>
+
+    <section>
+      <h2 id="section-domains">领域分布</h2>
+      <div class="card"><div class="bars" id="domain-bars"></div></div>
+    </section>
+
+    <section>
+      <h2 id="section-classify">分类统计</h2>
+      <div class="card" id="classify-table-wrap"></div>
+    </section>
+
+    <section>
+      <h2 id="section-blind">重大盲区</h2>
+      <div class="card" id="blind-list"></div>
+    </section>
+
+    <section>
+      <h2 id="section-source">源码触达</h2>
+      <div class="card" id="source-table-wrap"></div>
+    </section>
+
+    <section>
+      <h2 id="section-evolution">提问演变</h2>
+      <div class="card" id="evolution-list"></div>
+    </section>
+
+    <footer id="footer"></footer>
+  </div>
+
+  <script>
+    window.__REVIEW_DATA__ = {"version": 1, "reviews": [{"id": "20260629-120000", "timestamp": "2026-06-29T12:00:00+08:00", "language": "zh", "summary": {"questionUnits": 3, "blindSpots": 0, "sourceFiles": 6, "domains": 2}, "classifications": [{"domain": "Java", "subdomain": "JDK 21 新特性", "tags": ["概念理解"], "count": 1}, {"domain": "Java", "subdomain": "虚拟线程", "tags": ["概念理解", "原理知识"], "count": 1}, {"domain": "AI/ML", "subdomain": "Spring AI Tool Calling", "tags": ["概念理解", "语法问题", "架构设计"], "count": 1}], "blindSpots": [], "sourceMap": [{"file": "ai-x-agent/src/main/java/com/aix/agent/instance/AbstractAgent.java", "question": "Spring AI Function Calling 与 Agent 集成", "isBlindSpot": false, "inferred": false}, {"file": "ai-x-agent/src/main/java/com/aix/agent/instance/Agent.java", "question": "tools() 扩展点", "isBlindSpot": false, "inferred": false}, {"file": "ai-x-agent/src/main/java/com/aix/agent/instance/multiagent/TopicSummaryAgent.java", "question": "Agent 实现示例（未启用 tools）", "isBlindSpot": false, "inferred": false}, {"file": "pom.xml", "question": "Spring AI 版本 1.1.7", "isBlindSpot": false, "inferred": false}, {"file": "ai-x-agent/src/main/java/com/aix/agent/config/AgentAutoConfiguration.java", "question": "ChatClient Bean 配置", "isBlindSpot": false, "inferred": true}, {"file": "docs/requirements.md", "question": "MCP Tool search_history / search_knowledge 规划", "isBlindSpot": false, "inferred": false}], "evolution": [{"theme": "JDK 21 新特性", "note": "从 LTS 全景概览自然收窄到虚拟线程单点深挖，由宽到窄，方向清晰"}, {"theme": "Spring AI Function Calling", "note": "独立新主题，一轮内覆盖概念、三种 API 写法与 AI-X 项目集成点，尚未动手实现"}], "learningPath": ["对照 OpenJDK JEP 444 文档，理解虚拟线程 mount/unmount 与 pinning 场景", "阅读 Spring AI 官方 Tool Calling 文档，掌握 @Tool 与 ToolCallback 迁移差异", "在 AI-X 中为 RagAgent 实现 search_history @Tool 并通过 Agent.tools() 注入验证"], "actionItems": ["在 TopicSummaryAgent 或新 Agent 中 override tools()，接入一个 @Tool 方法做端到端验证", "阅读 AbstractAgent.buildChatClientRequestSpec 中 .tools() 与 .toolContext() 的调用链", "将 Anki CSV 导入 Anki 并完成一次复习"], "anki": {"csv": "Front,Back,Tags\n\"JDK 21 中哪些特性已正式转正（非 Preview）？\",\"虚拟线程(JEP 444)、Record 模式(JEP 440)、switch 模式匹配(JEP 441)、有序集合(JEP 431)、分代 ZGC(JEP 439)、KEM API(JEP 452)。\",\"Java::JDK21 概念理解\"\n\"虚拟线程与平台线程的核心区别是什么？\",\"虚拟线程由 JVM 调度、创建成本低；大量虚拟线程映射到少量 OS 载体线程；I/O 阻塞时可卸载让出载体。\",\"Java::虚拟线程 概念理解\"\n\"虚拟线程在什么情况下会发生 pinning？\",\"在 synchronized 块或 native 代码中阻塞时，虚拟线程可能无法从载体线程卸载，导致载体被占满。\",\"Java::虚拟线程 原理知识\"\n\"Spring AI 中 Function Calling 的新 API 叫什么？\",\"Tool Calling；核心接口为 ToolCallback，ChatClient 使用 .tools() 替代已弃用的 .functions()。\",\"AI/ML::SpringAI 概念理解\"\n\"ChatClient 与 ChatModel 在 Tool Calling 上的关键差异？\",\"ChatClient 通过 ToolCallingAdvisor 自动执行 tool call 循环；直接调 ChatModel 只发送工具定义，不会自动执行。\",\"AI/ML::SpringAI 原理知识\"\n\"AI-X 项目中 Agent 如何挂载工具？\",\"实现 Agent 接口的 tools() 方法返回 @Tool 标注的 Bean；AbstractAgent 已在 buildChatClientRequestSpec 中调用 .tools(this.tools())。\",\"AI/ML::SpringAI 架构设计\"", "cards": [{"front": "JDK 21 中哪些特性已正式转正（非 Preview）？", "back": "虚拟线程、Record 模式、switch 模式匹配、有序集合、分代 ZGC、KEM API。", "tags": ["Java::JDK21", "概念理解"]}, {"front": "虚拟线程与平台线程的核心区别是什么？", "back": "虚拟线程由 JVM 调度、创建成本低；大量虚拟线程映射到少量 OS 载体线程；I/O 阻塞时可卸载让出载体。", "tags": ["Java::虚拟线程", "概念理解"]}, {"front": "虚拟线程在什么情况下会发生 pinning？", "back": "在 synchronized 块或 native 代码中阻塞时，虚拟线程可能无法从载体线程卸载。", "tags": ["Java::虚拟线程", "原理知识"]}, {"front": "Spring AI 中 Function Calling 的新 API 叫什么？", "back": "Tool Calling；核心接口 ToolCallback，ChatClient 用 .tools() 替代 .functions()。", "tags": ["AI/ML::SpringAI", "概念理解"]}, {"front": "ChatClient 与 ChatModel 在 Tool Calling 上的关键差异？", "back": "ChatClient 通过 ToolCallingAdvisor 自动执行 tool call 循环；ChatModel 不会自动执行。", "tags": ["AI/ML::SpringAI", "原理知识"]}, {"front": "AI-X 项目中 Agent 如何挂载工具？", "back": "override Agent.tools() 返回 @Tool Bean；AbstractAgent 已调用 .tools(this.tools())。", "tags": ["AI/ML::SpringAI", "架构设计"]}]}}, {"id": "20260629-verify", "timestamp": "2026-06-29T16:00:00+08:00", "language": "zh", "summary": {"questionUnits": 4, "blindSpots": 1, "sourceFiles": 12, "domains": 2}, "classifications": [{"domain": "Tools", "subdomain": "Cursor Agent Skill", "tags": ["概念理解", "架构设计"], "count": 2}, {"domain": "Tools", "subdomain": "Skill 工程化", "tags": ["最佳实践", "架构设计"], "count": 2}, {"domain": "Tools", "subdomain": "Cursor Hook", "tags": ["工具使用"], "count": 1}], "blindSpots": [{"title": "Tools > Cursor Agent Skill — Skill 目录架构与输出形态", "turns": 4, "path": "创建 skill 需求 → 中文与语言规则 → scripts/references/assets + HTML 替代 Canvas → 验证", "rootCause": "对 Cursor Skill 标准目录结构（scripts/references/assets）、输出载体选型（Canvas vs HTML）及命名规范尚未形成稳定心智模型，需通过多轮迭代明确", "sourceFiles": ["~/.cursor/skills/conversation-review/SKILL.md", "~/.cursor/skills/conversation-review/references/structure.md", "~/.cursor/skills/conversation-review/assets/report-template.html"]}], "sourceMap": [{"file": "~/.cursor/skills/conversation-review/SKILL.md", "question": "Skill 主工作流与输出规范", "isBlindSpot": true, "inferred": false}, {"file": "~/.cursor/skills/conversation-review/references/structure.md", "question": "目录结构与 JSON Schema", "isBlindSpot": true, "inferred": false}, {"file": "~/.cursor/skills/conversation-review/references/taxonomy-guide.md", "question": "问题分类规则", "isBlindSpot": false, "inferred": false}, {"file": "~/.cursor/skills/conversation-review/assets/report-template.html", "question": "HTML 报告与时间筛选", "isBlindSpot": true, "inferred": false}, {"file": "~/.cursor/skills/conversation-review/scripts/append-review.py", "question": "回顾数据持久化", "isBlindSpot": false, "inferred": false}, {"file": "~/.cursor/skills/conversation-review/scripts/generate-report.py", "question": "HTML 报告渲染", "isBlindSpot": false, "inferred": false}, {"file": "~/.cursor/skills-cursor/create-skill/SKILL.md", "question": "Skill 创建规范", "isBlindSpot": false, "inferred": false}, {"file": "~/.cursor/skills-cursor/create-hook/SKILL.md", "question": "Hook 自动触发", "isBlindSpot": false, "inferred": false}, {"file": "~/.cursor/skills-cursor/canvas/SKILL.md", "question": "Canvas 能力边界（已弃用）", "isBlindSpot": false, "inferred": false}], "evolution": [{"theme": "Cursor Skill 设计", "note": "从功能需求描述（回顾/盲区/统计）逐步收敛到工程细节（命名、目录架构、HTML 筛选、语言规范），提问越来越具体，方向正确"}, {"theme": "输出形态", "note": "经历 Canvas → Markdown 结构文档 + HTML 可视化的明确切换，说明对输出载体有偏好但初始未锁定"}], "learningPath": ["阅读 ~/.cursor/skills-cursor/create-skill/SKILL.md，掌握 Skill 目录规范与 description 写法", "对照 conversation-review/references/structure.md 理解 scripts/references/assets 分工", "在浏览器打开 report.html，切换「全部 / 本周 / 本月」验证筛选逻辑", "阅读 references/hook-setup.md，按需配置 stop Hook 自动触发"], "actionItems": ["打开 report.html，确认统计卡片与领域柱状图显示正常", "将下方 Anki CSV 导入 Anki 并完成一次复习", "下次对话结束后手动运行 append-review.py + generate-report.py 观察数据累积"], "anki": {"csv": "Front,Back,Tags\n\"Cursor Skill 推荐目录结构是什么？\",\"SKILL.md 主入口 + scripts/（脚本）+ references/（参考文档）+ assets/（模板资源）+ data/（运行时数据）。\",\"Tools::Cursor Agent Skill 盲区\"\n\"conversation-review 用什么替代 Canvas？\",\"使用 assets/report-template.html 生成 HTML 报告，由 generate-report.py 注入 reviews.json 数据；支持全部/本周/本月筛选。\",\"Tools::Skill 工程化 盲区\"\n\"Skill description 字段有什么要求？\",\"第三人称、包含 WHAT 与 WHEN、≤1024 字符；Agent 靠它决定是否加载 Skill。\",\"Tools::Cursor Agent Skill\"", "cards": [{"front": "Cursor Skill 推荐目录结构是什么？", "back": "SKILL.md 主入口 + scripts/ + references/ + assets/ + data/。", "tags": ["Tools::Cursor Agent Skill", "盲区"]}, {"front": "conversation-review 用什么替代 Canvas？", "back": "assets/report-template.html 生成 HTML，generate-report.py 注入数据，支持全部/本周/本月筛选。", "tags": ["Tools::Skill 工程化", "盲区"]}, {"front": "Skill description 字段有什么要求？", "back": "第三人称、包含 WHAT 与 WHEN、≤1024 字符。", "tags": ["Tools::Cursor Agent Skill"]}]}}]};
+
+    const I18N = {
+      zh: {
+        title: "Conversation Review",
+        subtitle: "学习回顾 · 知识盲区分析",
+        all: "全部", week: "本周", month: "本月",
+        questions: "问题单元", blindSpots: "重大盲区", domains: "涉及领域", files: "触达文件",
+        sectionDomains: "领域分布", sectionClassify: "分类统计", sectionBlind: "重大盲区",
+        sectionSource: "源码触达", sectionEvolution: "提问演变",
+        domain: "大领域", subdomain: "子领域", tags: "标签", count: "次数",
+        file: "文件", question: "关联问题", blind: "盲区",
+        turns: "轮", path: "追问路径", rootCause: "根因推断",
+        empty: "该时间范围内暂无数据",
+        footer: (n) => `共 ${n} 次回顾 · conversation-review skill`,
+        yes: "是", no: "否", inferred: "推断"
+      },
+      en: {
+        title: "Conversation Review",
+        subtitle: "Learning retrospective · Knowledge gaps",
+        all: "All", week: "This week", month: "This month",
+        questions: "Questions", blindSpots: "Blind spots", domains: "Domains", files: "Files touched",
+        sectionDomains: "Domain distribution", sectionClassify: "Classification",
+        sectionBlind: "Major blind spots", sectionSource: "Source files", sectionEvolution: "Question evolution",
+        domain: "Domain", subdomain: "Subdomain", tags: "Tags", count: "Count",
+        file: "File", question: "Related question", blind: "Blind spot",
+        turns: "turns", path: "Escalation", rootCause: "Root cause",
+        empty: "No data in this time range",
+        footer: (n) => `${n} reviews · conversation-review skill`,
+        yes: "Yes", no: "No", inferred: "inferred"
+      }
+    };
+
+    let lang = "zh";
+    let t = I18N.zh;
+    let currentRange = "all";
+
+    function parseDate(iso) {
+      return iso ? new Date(iso) : new Date(0);
+    }
+
+    function isSameWeek(d, now) {
+      const start = new Date(now);
+      const day = start.getDay() || 7;
+      start.setDate(start.getDate() - day + 1);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 7);
+      return d >= start && d < end;
+    }
+
+    function isSameMonth(d, now) {
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+
+    function filterReviews(reviews, range) {
+      const now = new Date();
+      return reviews.filter(r => {
+        const d = parseDate(r.timestamp);
+        if (range === "week") return isSameWeek(d, now);
+        if (range === "month") return isSameMonth(d, now);
+        return true;
+      });
+    }
+
+    function aggregate(reviews) {
+      const summary = { questionUnits: 0, blindSpots: 0, sourceFiles: 0, domains: new Set() };
+      const domainCounts = {};
+      const classifications = [];
+      const blindSpots = [];
+      const sourceMap = [];
+      const evolution = [];
+
+      for (const r of reviews) {
+        const s = r.summary || {};
+        summary.questionUnits += s.questionUnits || 0;
+        summary.blindSpots += s.blindSpots || 0;
+        summary.sourceFiles += s.sourceFiles || 0;
+        (r.classifications || []).forEach(c => {
+          summary.domains.add(c.domain);
+          domainCounts[c.domain] = (domainCounts[c.domain] || 0) + (c.count || 0);
+          classifications.push({ ...c, reviewId: r.id });
+        });
+        (r.blindSpots || []).forEach(b => blindSpots.push({ ...b, reviewId: r.id }));
+        (r.sourceMap || []).forEach(s => sourceMap.push({ ...s, reviewId: r.id }));
+        (r.evolution || []).forEach(e => evolution.push({ ...e, reviewId: r.id }));
+      }
+
+      return {
+        summary: { ...summary, domains: summary.domains.size },
+        domainCounts,
+        classifications,
+        blindSpots,
+        sourceMap,
+        evolution,
+        reviewCount: reviews.length
+      };
+    }
+
+    function renderStats(data) {
+      const items = [
+        { label: t.questions, value: data.summary.questionUnits },
+        { label: t.blindSpots, value: data.summary.blindSpots },
+        { label: t.domains, value: data.summary.domains },
+        { label: t.files, value: data.summary.sourceFiles }
+      ];
+      document.getElementById("stats").innerHTML = items.map(i =>
+        `<div class="stat"><div class="label">${i.label}</div><div class="value">${i.value}</div></div>`
+      ).join("");
+    }
+
+    function renderBars(domainCounts) {
+      const el = document.getElementById("domain-bars");
+      const entries = Object.entries(domainCounts).sort((a, b) => b[1] - a[1]);
+      if (!entries.length) {
+        el.innerHTML = `<div class="empty">${t.empty}</div>`;
+        return;
+      }
+      const max = Math.max(...entries.map(e => e[1]));
+      el.innerHTML = entries.map(([name, count]) => `
+        <div class="bar-row">
+          <span class="bar-label">${name}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(count / max) * 100}%"></div></div>
+          <span class="bar-count">${count}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderClassify(rows) {
+      const wrap = document.getElementById("classify-table-wrap");
+      if (!rows.length) {
+        wrap.innerHTML = `<div class="empty">${t.empty}</div>`;
+        return;
+      }
+      wrap.innerHTML = `<table>
+        <thead><tr><th>${t.domain}</th><th>${t.subdomain}</th><th>${t.tags}</th><th>${t.count}</th></tr></thead>
+        <tbody>${rows.map(r => `<tr>
+          <td>${r.domain}</td><td>${r.subdomain}</td>
+          <td>${(r.tags || []).map(tag => `<span class="tag">${tag}</span>`).join("")}</td>
+          <td>${r.count || 0}</td>
+        </tr>`).join("")}</tbody>
+      </table>`;
+    }
+
+    function renderBlind(items) {
+      const el = document.getElementById("blind-list");
+      if (!items.length) {
+        el.innerHTML = `<div class="empty">${t.empty}</div>`;
+        return;
+      }
+      el.innerHTML = items.map(b => `
+        <div class="blind-item">
+          <h3>${b.title} <span class="tag blind">${b.turns || "?"} ${t.turns}</span></h3>
+          ${b.path ? `<p class="meta">${t.path}: ${b.path}</p>` : ""}
+          ${b.rootCause ? `<p>${t.rootCause}: ${b.rootCause}</p>` : ""}
+          ${(b.sourceFiles || []).length ? `<p class="meta">${(b.sourceFiles || []).map(f => `<code>${f}</code>`).join(" ")}</p>` : ""}
+        </div>
+      `).join("");
+    }
+
+    function renderSource(rows) {
+      const wrap = document.getElementById("source-table-wrap");
+      if (!rows.length) {
+        wrap.innerHTML = `<div class="empty">${t.empty}</div>`;
+        return;
+      }
+      wrap.innerHTML = `<table>
+        <thead><tr><th>${t.file}</th><th>${t.question}</th><th>${t.blind}</th></tr></thead>
+        <tbody>${rows.map(r => `<tr>
+          <td><code>${r.file}${r.inferred ? ` (${t.inferred})` : ""}</code></td>
+          <td>${r.question || ""}</td>
+          <td>${r.isBlindSpot ? t.yes : t.no}</td>
+        </tr>`).join("")}</tbody>
+      </table>`;
+    }
+
+    function renderEvolution(items) {
+      const el = document.getElementById("evolution-list");
+      if (!items.length) {
+        el.innerHTML = `<div class="empty">${t.empty}</div>`;
+        return;
+      }
+      el.innerHTML = items.map(e => `
+        <div class="blind-item">
+          <h3>${e.theme}</h3>
+          <p>${e.note}</p>
+        </div>
+      `).join("");
+    }
+
+    function applyLang() {
+      document.getElementById("title").textContent = t.title;
+      document.getElementById("subtitle").textContent = t.subtitle;
+      document.getElementById("section-domains").textContent = t.sectionDomains;
+      document.getElementById("section-classify").textContent = t.sectionClassify;
+      document.getElementById("section-blind").textContent = t.sectionBlind;
+      document.getElementById("section-source").textContent = t.sectionSource;
+      document.getElementById("section-evolution").textContent = t.sectionEvolution;
+      document.querySelectorAll(".filters button").forEach((btn, i) => {
+        const keys = ["all", "week", "month"];
+        btn.textContent = t[keys[i]];
+      });
+    }
+
+    function render() {
+      const store = window.__REVIEW_DATA__ || { reviews: [] };
+      const reviews = filterReviews(store.reviews || [], currentRange);
+      if (reviews.length && reviews[0].language === "en") {
+        lang = "en";
+        t = I18N.en;
+      }
+      applyLang();
+      const data = aggregate(reviews);
+      renderStats(data);
+      renderBars(data.domainCounts);
+      renderClassify(data.classifications);
+      renderBlind(data.blindSpots);
+      renderSource(data.sourceMap);
+      renderEvolution(data.evolution);
+      document.getElementById("footer").textContent = t.footer(data.reviewCount);
+    }
+
+    document.querySelectorAll(".filters button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentRange = btn.dataset.range;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

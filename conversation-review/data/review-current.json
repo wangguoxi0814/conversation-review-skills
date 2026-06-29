@@ -1,0 +1,141 @@
+{
+  "id": "20260629-verify",
+  "timestamp": "2026-06-29T16:00:00+08:00",
+  "language": "zh",
+  "summary": {
+    "questionUnits": 4,
+    "blindSpots": 1,
+    "sourceFiles": 12,
+    "domains": 2
+  },
+  "classifications": [
+    {
+      "domain": "Tools",
+      "subdomain": "Cursor Agent Skill",
+      "tags": ["概念理解", "架构设计"],
+      "count": 2
+    },
+    {
+      "domain": "Tools",
+      "subdomain": "Skill 工程化",
+      "tags": ["最佳实践", "架构设计"],
+      "count": 2
+    },
+    {
+      "domain": "Tools",
+      "subdomain": "Cursor Hook",
+      "tags": ["工具使用"],
+      "count": 1
+    }
+  ],
+  "blindSpots": [
+    {
+      "title": "Tools > Cursor Agent Skill — Skill 目录架构与输出形态",
+      "turns": 4,
+      "path": "创建 skill 需求 → 中文与语言规则 → scripts/references/assets + HTML 替代 Canvas → 验证",
+      "rootCause": "对 Cursor Skill 标准目录结构（scripts/references/assets）、输出载体选型（Canvas vs HTML）及命名规范尚未形成稳定心智模型，需通过多轮迭代明确",
+      "sourceFiles": [
+        "~/.cursor/skills/conversation-review/SKILL.md",
+        "~/.cursor/skills/conversation-review/references/structure.md",
+        "~/.cursor/skills/conversation-review/assets/report-template.html"
+      ]
+    }
+  ],
+  "sourceMap": [
+    {
+      "file": "~/.cursor/skills/conversation-review/SKILL.md",
+      "question": "Skill 主工作流与输出规范",
+      "isBlindSpot": true,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills/conversation-review/references/structure.md",
+      "question": "目录结构与 JSON Schema",
+      "isBlindSpot": true,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills/conversation-review/references/taxonomy-guide.md",
+      "question": "问题分类规则",
+      "isBlindSpot": false,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills/conversation-review/assets/report-template.html",
+      "question": "HTML 报告与时间筛选",
+      "isBlindSpot": true,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills/conversation-review/scripts/append-review.py",
+      "question": "回顾数据持久化",
+      "isBlindSpot": false,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills/conversation-review/scripts/generate-report.py",
+      "question": "HTML 报告渲染",
+      "isBlindSpot": false,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills-cursor/create-skill/SKILL.md",
+      "question": "Skill 创建规范",
+      "isBlindSpot": false,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills-cursor/create-hook/SKILL.md",
+      "question": "Hook 自动触发",
+      "isBlindSpot": false,
+      "inferred": false
+    },
+    {
+      "file": "~/.cursor/skills-cursor/canvas/SKILL.md",
+      "question": "Canvas 能力边界（已弃用）",
+      "isBlindSpot": false,
+      "inferred": false
+    }
+  ],
+  "evolution": [
+    {
+      "theme": "Cursor Skill 设计",
+      "note": "从功能需求描述（回顾/盲区/统计）逐步收敛到工程细节（命名、目录架构、HTML 筛选、语言规范），提问越来越具体，方向正确"
+    },
+    {
+      "theme": "输出形态",
+      "note": "经历 Canvas → Markdown 结构文档 + HTML 可视化的明确切换，说明对输出载体有偏好但初始未锁定"
+    }
+  ],
+  "learningPath": [
+    "阅读 ~/.cursor/skills-cursor/create-skill/SKILL.md，掌握 Skill 目录规范与 description 写法",
+    "对照 conversation-review/references/structure.md 理解 scripts/references/assets 分工",
+    "在浏览器打开 report.html，切换「全部 / 本周 / 本月」验证筛选逻辑",
+    "阅读 references/hook-setup.md，按需配置 stop Hook 自动触发"
+  ],
+  "actionItems": [
+    "打开 report.html，确认统计卡片与领域柱状图显示正常",
+    "将下方 Anki CSV 导入 Anki 并完成一次复习",
+    "下次对话结束后手动运行 append-review.py + generate-report.py 观察数据累积"
+  ],
+  "anki": {
+    "csv": "Front,Back,Tags\n\"Cursor Skill 推荐目录结构是什么？\",\"SKILL.md 主入口 + scripts/（脚本）+ references/（参考文档）+ assets/（模板资源）+ data/（运行时数据）。\",\"Tools::Cursor Agent Skill 盲区\"\n\"conversation-review 用什么替代 Canvas？\",\"使用 assets/report-template.html 生成 HTML 报告，由 generate-report.py 注入 reviews.json 数据；支持全部/本周/本月筛选。\",\"Tools::Skill 工程化 盲区\"\n\"Skill description 字段有什么要求？\",\"第三人称、包含 WHAT 与 WHEN、≤1024 字符；Agent 靠它决定是否加载 Skill。\",\"Tools::Cursor Agent Skill\"",
+    "cards": [
+      {
+        "front": "Cursor Skill 推荐目录结构是什么？",
+        "back": "SKILL.md 主入口 + scripts/ + references/ + assets/ + data/。",
+        "tags": ["Tools::Cursor Agent Skill", "盲区"]
+      },
+      {
+        "front": "conversation-review 用什么替代 Canvas？",
+        "back": "assets/report-template.html 生成 HTML，generate-report.py 注入数据，支持全部/本周/本月筛选。",
+        "tags": ["Tools::Skill 工程化", "盲区"]
+      },
+      {
+        "front": "Skill description 字段有什么要求？",
+        "back": "第三人称、包含 WHAT 与 WHEN、≤1024 字符。",
+        "tags": ["Tools::Cursor Agent Skill"]
+      }
+    ]
+  }
+}
