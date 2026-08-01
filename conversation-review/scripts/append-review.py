@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Append a todo group to the global todos.json datastore."""
+"""Append a question group to the global todos.json datastore."""
 
 from __future__ import annotations
 
@@ -36,12 +36,15 @@ def save_store(store: dict) -> None:
 
 
 def normalize_todo_group(raw: dict) -> dict:
-    """Normalize input into a todo group.
+    """Normalize input into a question group.
 
-    Input format:
+    Input format (supports both 'todos' and 'questions' keys):
     {
       "title": "optional title, defaults to current time",
-      "todos": ["todo text 1", "todo text 2"]
+      "questions": [
+        {"original": "用户原话", "text": "补充后的清晰表述"},
+        "简单形式（自动复制到 original）"
+      ]
     }
     """
     now = datetime.now(timezone.utc).astimezone()
@@ -49,18 +52,26 @@ def normalize_todo_group(raw: dict) -> dict:
 
     title = raw.get("title") or now.strftime("%Y-%m-%d %H:%M")
 
+    # Support both 'todos' and 'questions' keys
+    items = raw.get("questions") or raw.get("todos") or []
+
     todos = []
-    for i, item in enumerate(raw.get("todos", [])):
+    for i, item in enumerate(items):
         if isinstance(item, str):
+            # Simple string form: use same text for both original and text
             todos.append({
                 "id": f"t-{group_id}-{i+1:03d}",
                 "text": item,
+                "original": item,
                 "done": False
             })
         elif isinstance(item, dict):
+            text = item.get("text", "")
+            original = item.get("original", text)  # Default original to text if not provided
             todos.append({
                 "id": item.get("id", f"t-{group_id}-{i+1:03d}"),
-                "text": item.get("text", ""),
+                "text": text,
+                "original": original,
                 "done": item.get("done", False)
             })
 
@@ -73,7 +84,7 @@ def normalize_todo_group(raw: dict) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Append a todo group to todos.json")
+    parser = argparse.ArgumentParser(description="Append a question group to todos.json")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--stdin", action="store_true", help="Read JSON from stdin")
     group.add_argument("--file", type=Path, help="Read JSON from file")
@@ -97,7 +108,7 @@ def main() -> int:
     store["groups"].sort(key=lambda g: g.get("timestamp", ""))
     save_store(store)
 
-    print(f"Appended {len(todo_group['todos'])} todos (group {todo_group['id']}) -> {DATA_FILE}")
+    print(f"Appended {len(todo_group['todos'])} questions (group {todo_group['id']}) -> {DATA_FILE}")
     return 0
 
 

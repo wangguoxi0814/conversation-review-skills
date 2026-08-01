@@ -257,6 +257,16 @@
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
+    .todo-original {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: 4px;
+      padding-left: 12px;
+      border-left: 2px solid var(--border);
+      line-height: 1.4;
+    }
+
     .todo-edit-hint {
       font-size: 0.6875rem;
       color: var(--muted);
@@ -370,7 +380,7 @@
     <header>
       <div class="brand">
         <h1>Conversation Review</h1>
-        <p>对话回顾 · 待办事项管理</p>
+        <p>对话回顾 · 问题记录</p>
       </div>
     </header>
 
@@ -425,15 +435,15 @@
       document.getElementById('stats').innerHTML = `
         <div class="stat">
           <div class="value">${totalTodos}</div>
-          <div class="label">总待办</div>
+          <div class="label">总问题</div>
         </div>
         <div class="stat">
           <div class="value">${pendingTodos}</div>
-          <div class="label">待完成</div>
+          <div class="label">待回顾</div>
         </div>
         <div class="stat">
           <div class="value">${doneTodos}</div>
-          <div class="label">已完成</div>
+          <div class="label">已回顾</div>
         </div>
       `;
     }
@@ -445,9 +455,9 @@
       if (!groups.length) {
         container.innerHTML = `
           <div class="empty">
-            <div class="empty-icon">📝</div>
-            <p>暂无待办事项</p>
-            <p style="font-size: 0.8125rem; margin-top: 8px;">使用 /conversation-review 生成待办项</p>
+            <div class="empty-icon">💬</div>
+            <p>暂无问题记录</p>
+            <p style="font-size: 0.8125rem; margin-top: 8px;">使用 /conversation-review 捕获对话中的问题</p>
           </div>
         `;
         return;
@@ -488,13 +498,18 @@
     function renderTodoItem(groupId, todo) {
       const done = getStorage(`done_${groupId}_${todo.id}`, todo.done);
       const text = getStorage(`text_${groupId}_${todo.id}`, todo.text);
+      const original = todo.original || text;
+      const showOriginal = original && original !== text;
 
       return `
         <li class="todo-item ${done ? 'done' : ''}" data-todo-id="${todo.id}">
           <div class="todo-checkbox ${done ? 'checked' : ''}" onclick="toggleDone('${groupId}', '${todo.id}')">
             ${checkSvg()}
           </div>
-          <span class="todo-text" ondblclick="startEdit(this, '${groupId}', '${todo.id}')">${escapeHtml(text)}</span>
+          <div style="flex: 1;">
+            <span class="todo-text" ondblclick="startEdit(this, '${groupId}', '${todo.id}')">${escapeHtml(text)}</span>
+            ${showOriginal ? `<div class="todo-original">"${escapeHtml(original)}"</div>` : ''}
+          </div>
           <span class="todo-edit-hint">双击编辑</span>
         </li>
       `;
