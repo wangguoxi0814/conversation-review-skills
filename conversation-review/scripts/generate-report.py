@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render conversation review HTML report from datastore."""
+"""Render conversation review HTML report from todos.json."""
 
 from __future__ import annotations
 
@@ -8,22 +8,23 @@ import json
 from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-DATA_FILE = SKILL_ROOT / "data" / "reviews.json"
+CWD = Path.cwd()
+DATA_FILE = CWD / "data" / "todos.json"
 TEMPLATE_FILE = SKILL_ROOT / "assets" / "report-template.html"
-DEFAULT_OUTPUT = SKILL_ROOT / "data" / "report.html"
+DEFAULT_OUTPUT = CWD / "data" / "conversation-review.html"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate HTML report from reviews.json")
+    parser = argparse.ArgumentParser(description="Generate HTML report from todos.json")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output HTML path")
-    parser.add_argument("--data", type=Path, default=DATA_FILE, help="Reviews JSON path")
+    parser.add_argument("--data", type=Path, default=DATA_FILE, help="Todos JSON path")
     args = parser.parse_args()
 
     if not TEMPLATE_FILE.exists():
         print(f"Template not found: {TEMPLATE_FILE}", file=__import__("sys").stderr)
         return 1
 
-    store = {"version": 1, "reviews": []}
+    store = {"version": 1, "groups": []}
     if args.data.exists():
         store = json.loads(args.data.read_text(encoding="utf-8"))
 
