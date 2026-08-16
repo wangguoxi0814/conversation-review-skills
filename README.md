@@ -20,20 +20,20 @@ Copy-Item -Recurse -Force conversation-review "$env:USERPROFILE\.cursor\skills\c
 
 ```bash
 # macOS / Linux
-cp -r conversation-review ~/.claude/commands/conversation-review
+cp -r conversation-review ~/.claude/skills/conversation-review
 
 # Windows (PowerShell)
-Copy-Item -Recurse -Force conversation-review "$env:USERPROFILE\.claude\commands\conversation-review"
+Copy-Item -Recurse -Force conversation-review "$env:USERPROFILE\.claude\skills\conversation-review"
 ```
 
 #### Codex
 
 ```bash
 # macOS / Linux
-cp -r conversation-review ~/.codex/prompts/conversation-review
+cp -r conversation-review ~/.codex/skills/conversation-review
 
 # Windows (PowerShell)
-Copy-Item -Recurse -Force conversation-review "$env:USERPROFILE\.codex\prompts\conversation-review"
+Copy-Item -Recurse -Force conversation-review "$env:USERPROFILE\.codex\skills\conversation-review"
 ```
 
 ### 2. 在对话中触发
