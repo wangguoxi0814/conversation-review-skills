@@ -78,7 +78,10 @@ description: >-
 
 报告格式详见 [references/structure.md](references/structure.md)。
 
-在当前工作目录下生成 `conversation-reviews/review-YYYYMMDD-HHmmss.md`。
+**获取时间戳：** 生成文件名前，必须调用系统命令获取当前时间，禁止自行编造时间戳，时间戳示例：
+- 20260816-084252（年月日-时分秒）
+
+在当前工作目录下生成结果，文件名：`conversation-reviews/review-<时间戳>.md`。
 
 在聊天中给出 MD 文件的完整绝对路径，提示用户查看。
 
