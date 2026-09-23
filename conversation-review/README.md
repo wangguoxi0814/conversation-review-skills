@@ -93,7 +93,7 @@ conversation-reviews/
 
 ## 效果示例
 
-对话回顾报告示例（[示例文件](conversation-review/examples/review-20260816-104026.md)）：
+对话回顾报告示例（[示例文件](examples/review-20260816-104026.md)）：
 
 ```markdown
 # 对话回顾 · 2026-08-16 10:40
@@ -146,4 +146,4 @@ conversation-review/
 
 ---
 
-更多细节见 [`conversation-review/SKILL.md`](conversation-review/SKILL.md)。
+更多细节见 [`conversation-review/SKILL.md`](SKILL.md)。
